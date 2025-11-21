@@ -1,4 +1,4 @@
-# forte-security-desafio-dev-q4-2024
+# forte-security-desafio-dev-q4-2025
 
 Desenvolva uma aplicação para uma biblioteca em que seja possível gerenciar os empréstimos de livros e calcular a multa no caso de devolução atrasada ou não devolução.
 
@@ -61,7 +61,7 @@ Se você optar por utilizar o GitHub CodeSpace, todas as etapas que envolvem a i
 
 1. Consulte as Instruções de Avaliação presentes nesse documento (as quais o avaliador utilizará).
 2. Publique o seu código em um repositório público no GitHub utilizando a sua conta pessoal.
-3. Encaminhe o seu nome completo, e-mail e o link público do seu repositório no GitHub para o e-mail `jordano.xavier@fortesecurity.com.br` **até as 23:59:59 horas do dia 17 de novembro de 2024 (domingo)**.
+3. Encaminhe o seu nome completo, e-mail e o link público do seu repositório no GitHub para o e-mail `jordano.xavier@fortesecurity.com.br` **até as 23:59:59 horas do dia 23 de novembro de 2025 (domingo)**.
 4. Tente abrir o link em uma aba anônima do navegador para garantir que o avaliador conseguirá acessá-lo.
 
 # Instruções de Avaliação
