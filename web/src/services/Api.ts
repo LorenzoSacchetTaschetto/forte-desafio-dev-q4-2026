@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const Api = axios.create({
-    baseURL: "http://localhost:8080/",
+    baseURL: "https://expert-doodle-r497pxwrq6prhpxjr-8080.app.github.dev",
 })
