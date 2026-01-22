@@ -1,11 +1,13 @@
-import 'express';
+import { Request } from 'express';
 
-declare module 'express' {
-  interface Request {
-    user?: {
-      id: number;
-      role: string;
-      [key: string]: any;
-    };
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: number;
+        role: string;
+        [key: string]: any;
+      };
+    }
   }
 }

@@ -1,29 +1,43 @@
 import UserRepository from '../repositories/UserRepository';
 import User from '../models/User';
+import { UserRequestDTO, UserResponseDTO } from '../dtos/UserDTO';
 
 class UserService {
-  async getUserById(id: number): Promise<User | undefined> {
-    return UserRepository.findById(id);
+  private mapToResponse(user: User): UserResponseDTO {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return UserRepository.findAll();
+  async getUserById(id: number): Promise<UserResponseDTO | undefined> {
+    const user = await UserRepository.findById(id);
+    return user ? this.mapToResponse(user) : undefined;
   }
 
-  async createUser(userData: Partial<User>): Promise<User> {
-    return UserRepository.create(userData);
+  async getAllUsers(): Promise<UserResponseDTO[]> {
+    const users = await UserRepository.findAll();
+    return users.map(user => this.mapToResponse(user));
   }
 
-  async updateUser(id: number, userData: Partial<User>): Promise<User> {
-    return UserRepository.update(id, userData);
+  async createUser(userDTO: UserRequestDTO): Promise<UserResponseDTO> {
+    const user = await UserRepository.create(userDTO);
+    return this.mapToResponse(user);
+  }
+
+  async updateUser(id: number, userDTO: Partial<UserRequestDTO>): Promise<UserResponseDTO> {
+    const user = await UserRepository.update(id, userDTO);
+    return this.mapToResponse(user);
   }
 
   async deleteUser(id: number): Promise<number> {
     return UserRepository.delete(id);
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return UserRepository.findByEmail(email); 
+  async getUserByEmail(email: string): Promise<UserResponseDTO | undefined> {
+    const user = await UserRepository.findByEmail(email);
+    return user ? this.mapToResponse(user) : undefined;
   }
 }
 
