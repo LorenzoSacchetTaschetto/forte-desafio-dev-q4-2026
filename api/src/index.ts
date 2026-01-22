@@ -1,21 +1,26 @@
 import express from "express";
+import type { Request, Response } from "express";
 import cors from "cors";
 import { listBookLoans } from "./endpoints/listBookLoans";
+import authRoutes from "./routes/authRoutes";
 import figlet from "figlet";
 import chalk from "chalk";
 import { logger } from "./logger";
+import "./database/connection";
 
 const API_PORT = 8080;
 const api = express();
 
 api.use(cors({ origin: "*" }));
+api.use(express.json());
+api.use("/auth", authRoutes);
 
-api.get("/", (req, res) => {
+api.get("/", (req: Request, res: Response) => {
   logger.info("Root endpoint accessed");
   res.send("API is up");
 });
 
-api.get("/book-loans", (req, res) => {
+api.get("/book-loans", (req: Request, res: Response) => {
   logger.info("Book loans endpoint accessed");
   return listBookLoans(req, res);
 });

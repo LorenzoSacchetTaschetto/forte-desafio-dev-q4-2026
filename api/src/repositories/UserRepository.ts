@@ -20,6 +20,10 @@ class UserRepository {
   async delete(id: number): Promise<number> {
     return User.query().deleteById(id);
   }
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    return User.query().findOne({ email });
+  }
 }
 
 export default new UserRepository();

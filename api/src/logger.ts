@@ -1,6 +1,11 @@
-import { createLogger, format, transports } from "winston";
+import { format, createLogger, transports } from "winston";
+import * as winston from "winston";
 import fs from "fs";
 import path from "path";
+
+const customFormat = winston.format.printf(({ timestamp, level, message }) => {
+  return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+});
 
 const logDir = path.join(__dirname, "../logs");
 if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
@@ -9,10 +14,7 @@ export const logger = createLogger({
   level: "info",
   format: format.combine(
     format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    format.printf(
-      ({ timestamp, level, message }: { timestamp: string; level: string; message: string }) =>
-        `${timestamp} [${level.toUpperCase()}]: ${message}`
-    )
+    customFormat
   ),
   transports: [
     new transports.Console(),

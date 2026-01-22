@@ -1,0 +1,11 @@
+import 'express';
+
+declare module 'express' {
+  interface Request {
+    user?: {
+      id: number;
+      role: string;
+      [key: string]: any;
+    };
+  }
+}

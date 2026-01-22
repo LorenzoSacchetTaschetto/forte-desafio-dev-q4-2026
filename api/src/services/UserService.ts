@@ -21,6 +21,10 @@ class UserService {
   async deleteUser(id: number): Promise<number> {
     return UserRepository.delete(id);
   }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return UserRepository.findByEmail(email); 
+  }
 }
 
 export default new UserService();
