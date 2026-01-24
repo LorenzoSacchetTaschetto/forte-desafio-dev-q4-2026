@@ -56,13 +56,11 @@ export const CreateLoanPage: React.FC<CreateLoanPageProps> = ({ onLoanCreated, o
     setCreating(true);
 
     try {
-      // Pega a data como string YYYY-MM-DD e converte para ISO sem problema de timezone
-      // Exemplo: "2026-01-24" -> "2026-01-24T00:00:00Z"
-      const dateISO = `${loanDate}T00:00:00Z`;
-      
+      // Envia apenas a data sem conversão de timezone
+      // Exemplo: "2026-01-24" é enviado como está
       await CreateLoanService.createLoan({
         bookId: Number(selectedBookId),
-        loanDate: dateISO,
+        loanDate: loanDate,
       });
       setSuccess('✅ Empréstimo criado com sucesso!');
       setSelectedBookId('');

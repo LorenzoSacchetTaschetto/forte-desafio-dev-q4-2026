@@ -74,14 +74,19 @@ export const LoanService = {
     }
   },
 
-  updateLoanStatus: async (loanId: number, status: 'emprestado' | 'devolvido' | 'extraviado'): Promise<LoanData> => {
+  updateLoanStatus: async (loanId: number, status: 'emprestado' | 'devolvido' | 'extraviado', actualReturnDate?: string): Promise<LoanData> => {
     const token = AuthService.getToken();
     if (!token) {
       throw new Error('Token não disponível');
     }
 
     try {
-      const response = await Api.put(`/loans/${loanId}`, { status }, {
+      const payload: any = { status };
+      if (actualReturnDate) {
+        payload.actualReturnDate = actualReturnDate;
+      }
+      
+      const response = await Api.put(`/loans/${loanId}`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes";
 import loanRoutes from "./routes/loanRoutes";
 import bookRoutes from "./routes/bookRoutes";
+import userRoutes from "./routes/userRoutes";
 import figlet from "figlet";
 import chalk from "chalk";
 import { logger } from "./logger";
@@ -17,6 +18,7 @@ api.use(express.json());
 api.use("/auth", authRoutes);
 api.use("/books", bookRoutes);
 api.use("/loans", loanRoutes);
+api.use("/users", userRoutes);
 
 api.get("/", (req: Request, res: Response) => {
   logger.info("Root endpoint accessed");

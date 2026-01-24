@@ -113,9 +113,17 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
     if (!selectedLoan) return;
 
     try {
-      const updatedLoan = await LoanService.updateLoanStatus(selectedLoan.id, newStatus);
+      // Se mudar para "devolvido", atualizar também a data real de devolução
+      const updatePayload: any = { status: newStatus };
+      if (newStatus === 'devolvido') {
+        updatePayload.actualReturnDate = new Date().toISOString();
+      }
+      
+      const updatedLoan = await LoanService.updateLoanStatus(selectedLoan.id, newStatus, updatePayload.actualReturnDate);
+      
+      // Atualizar a loan no estado com todos os campos retornados pelo backend
       setLoans(loans.map(loan => 
-        loan.id === selectedLoan.id ? { ...loan, status: newStatus } : loan
+        loan.id === selectedLoan.id ? { ...loan, ...updatedLoan } : loan
       ));
       setShowStatusModal(false);
       alert('✅ Status atualizado com sucesso!');

@@ -84,7 +84,16 @@ class LoanService {
       throw new Error('Livro não encontrado');
     }
 
-    const loanDate = new Date(loanDTO.loanDate);
+    // Parse da data local sem conversão de timezone
+    // Entrada: "2026-01-24" -> cria Date para esse dia em horário local
+    const parts = loanDTO.loanDate.split('T')[0].split('-');
+    const loanDate = new Date(
+      parseInt(parts[0]),
+      parseInt(parts[1]) - 1,
+      parseInt(parts[2]),
+      0, 0, 0, 0
+    );
+    
     const returnDate = this.calculateReturnDate(loanDate);
 
     const loan = await LoanRepository.create({
@@ -131,19 +140,75 @@ class LoanService {
     return this.mapToResponse(loan);
   }
 
-  async updateLoan(id: number, loanDTO: Partial<LoanRequestDTO>): Promise<LoanResponseDTO> {
+  async updateLoan(id: number, loanData: any): Promise<LoanResponseDTO> {
+    const loanRecord = await LoanRepository.findById(id);
+    if (!loanRecord) {
+      throw new Error('Empréstimo não encontrado');
+    }
+
     const updateData: any = {};
     
-    if (loanDTO.userId !== undefined) updateData.userId = loanDTO.userId;
-    if (loanDTO.bookId !== undefined) {
-      const book = await BookService.getBookById(loanDTO.bookId);
+    // Atualizar status
+    if (loanData.status !== undefined) {
+      if (!['emprestado', 'devolvido', 'extraviado'].includes(loanData.status)) {
+        throw new Error('Status inválido');
+      }
+      updateData.status = loanData.status;
+    }
+    
+    // Atualizar userId
+    if (loanData.userId !== undefined) updateData.userId = loanData.userId;
+    
+    // Atualizar bookId
+    if (loanData.bookId !== undefined) {
+      const book = await BookService.getBookById(loanData.bookId);
       if (!book) {
         throw new Error('Livro não encontrado');
       }
-      updateData.bookId = loanDTO.bookId;
+      updateData.bookId = loanData.bookId;
     }
-    if (loanDTO.loanDate !== undefined) updateData.loanDate = new Date(loanDTO.loanDate);
-    if (loanDTO.returnDate !== undefined) updateData.returnDate = new Date(loanDTO.returnDate);
+    
+    // Atualizar loanDate
+    if (loanData.loanDate !== undefined) {
+      const parts = loanData.loanDate.split('T')[0].split('-');
+      updateData.loanDate = new Date(
+        parseInt(parts[0]),
+        parseInt(parts[1]) - 1,
+        parseInt(parts[2]),
+        0, 0, 0, 0
+      ).toISOString();
+    }
+    
+    // Atualizar returnDate
+    if (loanData.returnDate !== undefined) {
+      const parts = loanData.returnDate.split('T')[0].split('-');
+      updateData.returnDate = new Date(
+        parseInt(parts[0]),
+        parseInt(parts[1]) - 1,
+        parseInt(parts[2]),
+        0, 0, 0, 0
+      ).toISOString();
+    }
+    
+    // Atualizar actualReturnDate
+    if (loanData.actualReturnDate !== undefined) {
+      updateData.actualReturnDate = new Date(loanData.actualReturnDate).toISOString();
+    }
+    
+    // Calcular multa se mudando para "devolvido"
+    if (loanData.status === 'devolvido' && updateData.actualReturnDate) {
+      const returnDateObj = typeof loanRecord.returnDate === 'string' ? new Date(loanRecord.returnDate) : loanRecord.returnDate;
+      const actualReturnDateObj = new Date(updateData.actualReturnDate);
+      
+      let fine = 0;
+      if (actualReturnDateObj > returnDateObj) {
+        fine = this.calculateFine(returnDateObj, actualReturnDateObj);
+      }
+      updateData.fine = fine;
+    } else if (loanData.fine !== undefined) {
+      // Se foi enviada multa manualmente, usar esse valor
+      updateData.fine = loanData.fine;
+    }
 
     const loan = await LoanRepository.update(id, updateData);
     return this.mapToResponse(loan);
