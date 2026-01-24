@@ -5,10 +5,8 @@ type LoanStatus = 'emprestado' | 'devolvido' | 'extraviado';
 class Loan extends Model {
   static tableName = 'loans';
 
-  // Usar snakeCaseMappers para mapear automaticamente camelCase <-> snake_case
   static columnNameMappers = snakeCaseMappers();
 
-  // Propriedades da aplicação (camelCase)
   id!: number;
   userId!: number;
   bookId!: number;
@@ -48,7 +46,7 @@ class Loan extends Model {
     },
     book: {
       relation: Model.BelongsToOneRelation,
-      modelClass: require('./Book').Book,
+      modelClass: require('./Book').default,
       join: {
         from: 'loans.book_id',
         to: 'books.id',

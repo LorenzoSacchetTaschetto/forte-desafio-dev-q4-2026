@@ -8,13 +8,19 @@ class LoanService {
   private mapToResponse(loan: Loan): LoanResponseDTO {
     const loanDateStr = typeof loan.loanDate === 'string' ? loan.loanDate : loan.loanDate.toISOString();
     const returnDateStr = typeof loan.returnDate === 'string' ? loan.returnDate : loan.returnDate.toISOString();
+    const actualReturnDateStr = loan.actualReturnDate 
+      ? (typeof loan.actualReturnDate === 'string' ? loan.actualReturnDate : loan.actualReturnDate.toISOString())
+      : undefined;
     
     return {
       id: loan.id,
       userId: loan.userId,
       bookId: loan.bookId,
+      status: loan.status,
+      fine: loan.fine || 0,
       loanDate: loanDateStr,
       returnDate: returnDateStr,
+      actualReturnDate: actualReturnDateStr,
     };
   }
 
@@ -136,6 +142,11 @@ class LoanService {
 
   async deleteLoan(id: number): Promise<number> {
     return LoanRepository.delete(id);
+  }
+
+  async getUserLoans(userId: number): Promise<LoanResponseDTO[]> {
+    const loans = await LoanRepository.findByUserId(userId);
+    return loans.map(loan => this.mapToResponse(loan));
   }
 }
 

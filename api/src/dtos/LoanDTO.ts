@@ -9,6 +9,9 @@ export interface LoanResponseDTO {
   id: number;
   userId: number;
   bookId: number;
+  status: 'emprestado' | 'devolvido' | 'extraviado';
+  fine: number;
   loanDate: string;
-  returnDate?: string;
+  returnDate: string;
+  actualReturnDate?: string;
 }

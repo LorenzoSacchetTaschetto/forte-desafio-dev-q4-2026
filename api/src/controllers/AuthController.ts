@@ -12,9 +12,22 @@ class AuthController {
 
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await UserService.createUser({ name, email, password: hashedPassword });
+      const userCreated = await UserService.createUser({ name, email, password: hashedPassword });
+      
+      // Buscar o usuário para pegar o role
+      const userByEmail = await UserRepository.findByEmail(email);
+      const role = userByEmail?.role || 'user';
 
-      return res.status(201).json({ message: 'Usuário registrado com sucesso', user });
+      const token = jwt.sign({ id: userCreated.id, role }, SECRET_KEY, { expiresIn: '1h' });
+      return res.status(201).json({ 
+        message: 'Usuário registrado com sucesso', 
+        token,
+        user: {
+          id: userCreated.id,
+          name: userCreated.name,
+          email: userCreated.email,
+        },
+      });
     } catch (error) {
       return res.status(400).json({ message: 'Erro ao registrar usuário', error: (error as Error).message });
     }
@@ -35,7 +48,15 @@ class AuthController {
       }
 
       const token = jwt.sign({ id: userByEmail.id, role: userByEmail.role }, SECRET_KEY, { expiresIn: '1h' });
-      return res.status(200).json({ message: 'Login bem-sucedido', token });
+      return res.status(200).json({ 
+        message: 'Login bem-sucedido', 
+        token,
+        user: {
+          id: userByEmail.id,
+          name: userByEmail.name,
+          email: userByEmail.email,
+        },
+      });
     } catch (error) {
       return res.status(400).json({ message: 'Erro ao fazer login', error: (error as Error).message });
     }
