@@ -26,6 +26,7 @@ class AuthController {
           id: userCreated.id,
           name: userCreated.name,
           email: userCreated.email,
+          role,
         },
       });
     } catch (error) {
@@ -55,6 +56,7 @@ class AuthController {
           id: userByEmail.id,
           name: userByEmail.name,
           email: userByEmail.email,
+          role: userByEmail.role,
         },
       });
     } catch (error) {

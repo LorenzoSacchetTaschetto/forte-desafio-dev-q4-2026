@@ -36,4 +36,60 @@ export const LoanService = {
       throw error;
     }
   },
+
+  getAllLoans: async (): Promise<LoanData[]> => {
+    const token = AuthService.getToken();
+    if (!token) {
+      throw new Error('Token não disponível');
+    }
+
+    try {
+      const response = await Api.get('/loans', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Erro ao buscar todos os empréstimos:', error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  deleteLoan: async (loanId: number): Promise<void> => {
+    const token = AuthService.getToken();
+    if (!token) {
+      throw new Error('Token não disponível');
+    }
+
+    try {
+      await Api.delete(`/loans/${loanId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error: any) {
+      console.error('Erro ao deletar empréstimo:', error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  updateLoanStatus: async (loanId: number, status: 'emprestado' | 'devolvido' | 'extraviado'): Promise<LoanData> => {
+    const token = AuthService.getToken();
+    if (!token) {
+      throw new Error('Token não disponível');
+    }
+
+    try {
+      const response = await Api.put(`/loans/${loanId}`, { status }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Erro ao atualizar status do empréstimo:', error.response?.data || error.message);
+      throw error;
+    }
+  },
 };

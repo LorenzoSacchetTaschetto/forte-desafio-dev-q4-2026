@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import LoanController from '../controllers/LoanController';
-import { authenticate } from '../middlewares/authMiddleware';
+import { authenticate, authorize } from '../middlewares/authMiddleware';
 
 const router = Router();
 
@@ -10,8 +10,8 @@ router.use(authenticate);
 router.get('/me', LoanController.getUserLoans);
 router.get('/status', LoanController.getLoansByStatus);
 
-// Rotas gerais depois
-router.get('/', LoanController.getAllLoans);
+// Rotas gerais depois - apenas admins podem ver todas as loans
+router.get('/', authorize(['admin']), LoanController.getAllLoans);
 router.get('/:id', LoanController.getLoanById);
 
 router.post('/', LoanController.createLoan);

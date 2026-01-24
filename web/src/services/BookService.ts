@@ -28,6 +28,26 @@ export const BookService = {
       throw error;
     }
   },
+
+  createBook: async (data: { title: string; author: string; isbn?: string; quantity?: number }): Promise<Book> => {
+    const token = AuthService.getToken();
+    if (!token) {
+      throw new Error('Usuário não autenticado');
+    }
+
+    try {
+      const response = await Api.post('/books', data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Livro criado:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Erro ao criar livro:', error.response?.data || error.message);
+      throw error;
+    }
+  },
 };
 
 export const CreateLoanService = {

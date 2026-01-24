@@ -25,15 +25,24 @@ class LoanService {
   }
 
   calculateReturnDate(loanDate: Date): Date {
+    // Cria uma cópia para não modificar a data original
     const returnDate = new Date(loanDate);
+    
+    // Adiciona 30 dias
     returnDate.setDate(returnDate.getDate() + 30);
 
+    // Se cair em sábado (6) ou domingo (0), move para próxima segunda
     const dayOfWeek = returnDate.getDay();
     if (dayOfWeek === 6) {
+      // Sábado -> segunda (+2 dias)
       returnDate.setDate(returnDate.getDate() + 2);
     } else if (dayOfWeek === 0) {
+      // Domingo -> segunda (+1 dia)
       returnDate.setDate(returnDate.getDate() + 1);
     }
+
+    // Reseta a hora para meia-noite para consistência
+    returnDate.setHours(0, 0, 0, 0);
 
     return returnDate;
   }

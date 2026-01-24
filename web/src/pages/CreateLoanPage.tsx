@@ -8,10 +8,18 @@ interface CreateLoanPageProps {
   onBack: () => void;
 }
 
+// Helper para obter data local no formato YYYY-MM-DD sem problemas de timezone
+const getLocalDateString = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const CreateLoanPage: React.FC<CreateLoanPageProps> = ({ onLoanCreated, onBack }) => {
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<number | ''>('');
-  const [loanDate, setLoanDate] = useState(new Date().toISOString().split('T')[0]);
+  const [loanDate, setLoanDate] = useState(getLocalDateString(new Date()));
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
@@ -48,13 +56,17 @@ export const CreateLoanPage: React.FC<CreateLoanPageProps> = ({ onLoanCreated, o
     setCreating(true);
 
     try {
+      // Pega a data como string YYYY-MM-DD e converte para ISO sem problema de timezone
+      // Exemplo: "2026-01-24" -> "2026-01-24T00:00:00Z"
+      const dateISO = `${loanDate}T00:00:00Z`;
+      
       await CreateLoanService.createLoan({
         bookId: Number(selectedBookId),
-        loanDate: new Date(loanDate).toISOString(),
+        loanDate: dateISO,
       });
       setSuccess('✅ Empréstimo criado com sucesso!');
       setSelectedBookId('');
-      setLoanDate(new Date().toISOString().split('T')[0]);
+      setLoanDate(getLocalDateString(new Date()));
       setTimeout(() => {
         onLoanCreated();
       }, 1500);

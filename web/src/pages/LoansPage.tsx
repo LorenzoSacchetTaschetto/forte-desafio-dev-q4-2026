@@ -65,8 +65,12 @@ export const LoansPage: React.FC<LoansPageProps> = ({ onLogout, onCreateLoan }) 
     }
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('pt-BR');
+  const formatDate = (dateString: string) => {
+    // Remove a parte de horário e usa apenas a data YYYY-MM-DD
+    // Isso evita problemas de timezone
+    const dateOnly = dateString.split('T')[0]; // "2026-01-23"
+    const [year, month, day] = dateOnly.split('-');
+    return `${day}/${month}/${year}`; // "23/01/2026"
   };
 
   return (
