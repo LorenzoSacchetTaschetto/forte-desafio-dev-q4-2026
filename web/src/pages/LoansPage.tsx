@@ -15,13 +15,7 @@ export const LoansPage: React.FC<LoansPageProps> = ({ onLogout, onCreateLoan }) 
 
   const user = AuthService.getUser();
 
-  console.log('LoansPage - User:', user);
-  console.log('LoansPage - Token:', AuthService.getToken());
-  console.log('LoansPage - isAuthenticated:', AuthService.isAuthenticated());
-  console.log('LoansPage - localStorage user:', localStorage.getItem('user'));
-
   if (!user) {
-    console.error('Usuário não encontrado no localStorage');
     return (
       <div className="text-center mt-5">
         <Alert variant="danger">Usuário não autenticado. Faça login novamente.</Alert>
@@ -32,9 +26,7 @@ export const LoansPage: React.FC<LoansPageProps> = ({ onLogout, onCreateLoan }) 
   useEffect(() => {
     const fetchLoans = async () => {
       try {
-        console.log('Fetching loans...');
         const data = await LoanService.getUserLoans();
-        console.log('Loans fetched:', data);
         setLoans(data);
       } catch (err: any) {
         console.error('Erro ao carregar empréstimos:', err);
@@ -83,7 +75,17 @@ export const LoansPage: React.FC<LoansPageProps> = ({ onLogout, onCreateLoan }) 
           <Navbar.Collapse className="justify-content-end">
             <Nav>
               <span className="me-3 text-muted">👤 {user?.name}</span>
-              <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+              <Button 
+                style={{ 
+                  fontWeight: 'bold',
+                  background: '#dc3545',
+                  border: 'none',
+                  color: '#fff',
+                  padding: '0.375rem 0.75rem'
+                }}
+                size="sm" 
+                onClick={handleLogout}
+              >
                 🚪 Sair
               </Button>
             </Nav>

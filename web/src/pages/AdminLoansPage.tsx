@@ -22,14 +22,11 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<AdminLoanData | null>(null);
   const [newStatus, setNewStatus] = useState<'emprestado' | 'devolvido' | 'extraviado'>('emprestado');
+  const [returnDate, setReturnDate] = useState<string>('');
 
   const user = AuthService.getUser();
 
-  console.log('AdminLoansPage - User:', user);
-  console.log('AdminLoansPage - User Role:', user?.role);
-
   if (!user) {
-    console.error('Usuário não encontrado no localStorage');
     return (
       <div className="text-center mt-5">
         <Alert variant="danger">Usuário não autenticado. Faça login novamente.</Alert>
@@ -48,9 +45,7 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
   useEffect(() => {
     const fetchAllLoans = async () => {
       try {
-        console.log('Fetching all loans for admin...');
         const loansData = await LoanService.getAllLoans();
-        console.log('All loans fetched:', loansData);
 
         // Buscar informações de usuários e livros
         const enhancedLoans = await Promise.all(
@@ -62,7 +57,7 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
               const userInfo = await UserService.getUserById(loan.userId);
               userName = userInfo.name;
             } catch (err) {
-              console.warn(`Erro ao buscar usuário ${loan.userId}:`, err);
+              // Erro ao buscar usuário
             }
 
             try {
@@ -73,7 +68,7 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
                 bookTitle = bookInfo.title;
               }
             } catch (err) {
-              console.warn(`Erro ao buscar livro ${loan.bookId}:`, err);
+              // Erro ao buscar livro
             }
 
             return { ...loan, userName, bookTitle };
@@ -82,7 +77,6 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
 
         setLoans(enhancedLoans);
       } catch (err: any) {
-        console.error('Erro ao carregar empréstimos:', err);
         setError(err.response?.data?.message || 'Erro ao carregar empréstimos');
       } finally {
         setLoading(false);
@@ -113,10 +107,18 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
     if (!selectedLoan) return;
 
     try {
-      // Se mudar para "devolvido", atualizar também a data real de devolução
+      // Se mudar para "devolvido", usar a data definida pelo usuário
       const updatePayload: any = { status: newStatus };
-      if (newStatus === 'devolvido') {
-        updatePayload.actualReturnDate = new Date().toISOString();
+      if (newStatus === 'devolvido' && returnDate) {
+        // Converte a data do input para UTC
+        const parts = returnDate.split('-');
+        const dateInUTC = new Date(Date.UTC(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])));
+        updatePayload.actualReturnDate = dateInUTC.toISOString();
+      } else if (newStatus === 'devolvido') {
+        // Se não definir data, usa hoje
+        const today = new Date();
+        const dateInUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+        updatePayload.actualReturnDate = dateInUTC.toISOString();
       }
       
       const updatedLoan = await LoanService.updateLoanStatus(selectedLoan.id, newStatus, updatePayload.actualReturnDate);
@@ -126,6 +128,7 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
         loan.id === selectedLoan.id ? { ...loan, ...updatedLoan } : loan
       ));
       setShowStatusModal(false);
+      setReturnDate('');
       alert('✅ Status atualizado com sucesso!');
     } catch (err: any) {
       alert(`❌ Erro ao atualizar: ${err.response?.data?.message || err.message}`);
@@ -135,6 +138,9 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
   const openStatusModal = (loan: AdminLoanData) => {
     setSelectedLoan(loan);
     setNewStatus(loan.status);
+    // Define a data de hoje como padrão
+    const today = new Date();
+    setReturnDate(today.toISOString().split('T')[0]);
     setShowStatusModal(true);
   };
 
@@ -149,6 +155,43 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
       default:
         return <span className="badge bg-secondary">{status}</span>;
     }
+  };
+
+  const calculateDelayWarning = () => {
+    if (!selectedLoan || newStatus !== 'devolvido' || !returnDate) {
+      return null;
+    }
+
+    const returnDateObj = new Date(selectedLoan.returnDate);
+    const actualReturnDateObj = new Date(returnDate);
+
+    const diffMs = actualReturnDateObj.getTime() - returnDateObj.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      return (
+        <Alert variant="success" className="mt-3">
+          ✅ Devolução <strong>no prazo</strong> - Sem multa!
+        </Alert>
+      );
+    }
+
+    if (diffDays === 0 || diffDays === 1) {
+      return (
+        <Alert variant="info" className="mt-3">
+          ℹ️ Atraso de <strong>{diffDays} dia(s)</strong> - Sem multa!
+        </Alert>
+      );
+    }
+
+    const fineAmount = diffDays * 0.5;
+    return (
+      <Alert variant="warning" className="mt-3">
+        ⚠️ Atraso de <strong>{diffDays} dias</strong> - <br />
+        Multa cobrada: <strong>R$ {fineAmount.toFixed(2)}</strong> <br />
+        <small>(Cobrada a partir do 1º dia de atraso: R$ 0,50 por dia)</small>
+      </Alert>
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -167,7 +210,17 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
           <Navbar.Collapse className="justify-content-end">
             <Nav>
               <span className="me-3 text-muted">👤 {user?.name}</span>
-              <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+              <Button 
+                style={{ 
+                  fontWeight: 'bold',
+                  background: '#dc3545',
+                  border: 'none',
+                  color: '#fff',
+                  padding: '0.375rem 0.75rem'
+                }}
+                size="sm" 
+                onClick={handleLogout}
+              >
                 🚪 Sair
               </Button>
             </Nav>
@@ -244,10 +297,10 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
                     <td>R$ {(Number(loan.fine) || 0).toFixed(2)}</td>
                     <td>
                       <Button
-                        variant="info"
+                        variant="dark"
                         size="sm"
                         onClick={() => openStatusModal(loan)}
-                        style={{ marginRight: '0.5rem' }}
+                        style={{ marginRight: '0.5rem', fontWeight: 'bold' }}
                       >
                         ✏️ Status
                       </Button>
@@ -255,6 +308,7 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
                         variant="danger"
                         size="sm"
                         onClick={() => handleDeleteLoan(loan.id)}
+                        style={{ fontWeight: 'bold' }}
                       >
                         🗑️ Deletar
                       </Button>
@@ -273,8 +327,12 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
           <Modal.Title>Atualizar Status - Empréstimo #{selectedLoan?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <div className="mb-3">
+            <strong>Data Prevista de Devolução:</strong> {selectedLoan ? selectedLoan.returnDate.split('T')[0] : '-'}
+          </div>
+          
           <Form>
-            <Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Novo Status</Form.Label>
               <Form.Select
                 value={newStatus}
@@ -285,13 +343,34 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
                 <option value="extraviado">Extraviado</option>
               </Form.Select>
             </Form.Group>
+
+            {newStatus === 'devolvido' && (
+              <Form.Group className="mb-3">
+                <Form.Label>Data de Devolução Real *</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={returnDate}
+                  onChange={(e) => setReturnDate(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                />
+                <Form.Text className="text-muted">
+                  Deixe em branco para usar a data de hoje
+                </Form.Text>
+              </Form.Group>
+            )}
           </Form>
+
+          {calculateDelayWarning()}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowStatusModal(false)}>
+          <Button variant="secondary" onClick={() => setShowStatusModal(false)} style={{ fontWeight: 'bold' }}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={handleUpdateStatus}>
+          <Button 
+            variant="success" 
+            onClick={handleUpdateStatus}
+            style={{ fontWeight: 'bold', background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)', border: 'none' }}
+          >
             Atualizar
           </Button>
         </Modal.Footer>

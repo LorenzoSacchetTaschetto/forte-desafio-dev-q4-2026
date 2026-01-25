@@ -172,23 +172,17 @@ class LoanController {
 
   async getUserLoans(req: Request, res: Response): Promise<void> {
     try {
-      console.log('getUserLoans - req.user:', (req.user as any));
       const userId = (req.user as any)?.id;
-      console.log('getUserLoans - userId:', userId);
 
       if (!userId) {
-        console.error('getUserLoans - userId não encontrado');
         res.status(401).json({ error: 'Usuário não autenticado' });
         return;
       }
 
-      console.log('getUserLoans - Chamando LoanService.getUserLoans com userId:', userId);
       const loans = await LoanService.getUserLoans(userId);
-      console.log('getUserLoans - Loans retornados:', loans);
       logger.info(`Retrieved loans for authenticated user ${userId}`);
       res.json(loans);
     } catch (error) {
-      console.error('getUserLoans - Erro:', error);
       logger.error(`Error retrieving user loans: ${error}`);
       res.status(500).json({ error: 'Erro ao listar empréstimos do usuário', details: (error as any).message });
     }

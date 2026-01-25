@@ -13,12 +13,12 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<'loans' | 'create-loan' | 'admin-loans' | 'create-book'>('loans');
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [showLogin, setShowLogin] = useState(true);
 
   useEffect(() => {
     document.title = 'Forte Library - Gerenciador de Empréstimos';
     const authenticated = AuthService.isAuthenticated();
     const user = AuthService.getUser();
-    console.log('App - Checking auth. Token:', !!AuthService.getToken(), 'User:', user);
     setIsAuthenticated(authenticated && !!user);
     setUserRole(user?.role || null);
     setLoading(false);
@@ -29,10 +29,10 @@ function App() {
   }
 
   const handleLoginSuccess = () => {
-    console.log('Login successful, updating state');
     const user = AuthService.getUser();
     setUserRole(user?.role || null);
     setIsAuthenticated(true);
+    setShowLogin(false);
     // Redireciona admins para admin-loans
     if (user?.role === 'admin') {
       setCurrentPage('admin-loans');
@@ -42,9 +42,9 @@ function App() {
   };
 
   const handleLogout = () => {
-    console.log('Logout, updating state');
     setIsAuthenticated(false);
     setUserRole(null);
+    setShowLogin(true);
   };
 
   const handleLoanCreated = () => {
@@ -53,7 +53,7 @@ function App() {
 
   return (
     <>
-      {!isAuthenticated ? (
+      {showLogin || !isAuthenticated ? (
         <LoginPage onLoginSuccess={handleLoginSuccess} />
       ) : userRole === 'admin' ? (
         currentPage === 'admin-loans' ? (

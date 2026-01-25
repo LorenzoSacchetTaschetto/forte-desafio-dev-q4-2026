@@ -33,7 +33,6 @@ export const CreateLoanPage: React.FC<CreateLoanPageProps> = ({ onLoanCreated, o
         const booksData = await BookService.getAllBooks();
         setBooks(booksData);
       } catch (err: any) {
-        console.error('Erro ao carregar livros:', err);
         setError('Erro ao carregar lista de livros');
       } finally {
         setLoading(false);
@@ -91,10 +90,31 @@ export const CreateLoanPage: React.FC<CreateLoanPageProps> = ({ onLoanCreated, o
           <Navbar.Collapse className="justify-content-end">
             <Nav>
               <span className="me-3 text-muted">👤 {user?.name}</span>
-              <Button variant="outline-secondary" size="sm" className="me-2" onClick={onBack}>
+              <Button 
+                style={{ 
+                  fontWeight: 'bold',
+                  background: '#0052cc',
+                  border: 'none',
+                  color: '#fff',
+                  padding: '0.375rem 0.75rem',
+                  marginRight: '0.5rem'
+                }}
+                size="sm" 
+                onClick={onBack}
+              >
                 ← Voltar
               </Button>
-              <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+              <Button 
+                style={{ 
+                  fontWeight: 'bold',
+                  background: '#dc3545',
+                  border: 'none',
+                  color: '#fff',
+                  padding: '0.375rem 0.75rem'
+                }}
+                size="sm" 
+                onClick={handleLogout}
+              >
                 🚪 Sair
               </Button>
             </Nav>

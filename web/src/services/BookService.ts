@@ -41,7 +41,6 @@ export const BookService = {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('Livro criado:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('Erro ao criar livro:', error.response?.data || error.message);
@@ -73,7 +72,6 @@ export const CreateLoanService = {
           },
         }
       );
-      console.log('Empréstimo criado:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('Erro ao criar empréstimo:', error.response?.data || error.message);

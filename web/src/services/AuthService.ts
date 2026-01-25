@@ -23,14 +23,11 @@ export interface AuthResponse {
 export const AuthService = {
   login: async (data: LoginRequest): Promise<AuthResponse> => {
     try {
-      console.log('Tentando fazer login com:', data.email);
       const response = await Api.post('/auth/login', data);
-      console.log('Resposta do login:', response.data);
       
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-        console.log('Token e usuário salvos no localStorage');
       }
       return response.data;
     } catch (error: any) {
@@ -41,14 +38,11 @@ export const AuthService = {
 
   signup: async (data: SignUpRequest): Promise<AuthResponse> => {
     try {
-      console.log('Tentando cadastrar:', data.email);
       const response = await Api.post('/auth/register', data);
-      console.log('Resposta do signup:', response.data);
       
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-        console.log('Token e usuário salvos no localStorage');
       }
       return response.data;
     } catch (error: any) {

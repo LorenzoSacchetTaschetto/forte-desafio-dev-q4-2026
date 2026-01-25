@@ -49,13 +49,13 @@ class LoanService {
 
   calculateFine(returnDate: Date, actualReturnDate: Date): number {
     const diffMs = actualReturnDate.getTime() - returnDate.getTime();
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffDays <= 1) {
+    if (diffDays < 2) {
       return 0;
     }
 
-    return (diffDays - 1) * 0.5;
+    return diffDays * 0.5;
   }
 
   async getLoanById(id: number): Promise<LoanResponseDTO | undefined> {

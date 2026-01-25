@@ -73,7 +73,17 @@ export const CreateBookPage: React.FC<CreateBookPageProps> = ({ onBookCreated, o
           <Navbar.Collapse className="justify-content-end">
             <Nav>
               <span className="me-3 text-muted">👤 {user?.name}</span>
-              <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+              <Button 
+                style={{ 
+                  fontWeight: 'bold',
+                  background: '#dc3545',
+                  border: 'none',
+                  color: '#fff',
+                  padding: '0.375rem 0.75rem'
+                }}
+                size="sm" 
+                onClick={handleLogout}
+              >
                 🚪 Sair
               </Button>
             </Nav>
@@ -84,7 +94,15 @@ export const CreateBookPage: React.FC<CreateBookPageProps> = ({ onBookCreated, o
       <Container className="mt-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 style={{ margin: 0 }}>📚 Criar Novo Livro</h2>
-          <Button variant="secondary" onClick={onBack}>
+          <Button 
+            style={{
+              fontWeight: 'bold',
+              background: '#0052cc',
+              border: 'none',
+              color: '#fff'
+            }}
+            onClick={onBack}
+          >
             ← Voltar
           </Button>
         </div>
