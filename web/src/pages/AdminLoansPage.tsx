@@ -47,7 +47,6 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
       try {
         const loansData = await LoanService.getAllLoans();
 
-        // Buscar informações de usuários e livros
         const enhancedLoans = await Promise.all(
           loansData.map(async (loan) => {
             let userName = `Usuário #${loan.userId}`;
@@ -57,7 +56,6 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
               const userInfo = await UserService.getUserById(loan.userId);
               userName = userInfo.name;
             } catch (err) {
-              // Erro ao buscar usuário
             }
 
             try {
@@ -68,7 +66,6 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
                 bookTitle = bookInfo.title;
               }
             } catch (err) {
-              // Erro ao buscar livro
             }
 
             return { ...loan, userName, bookTitle };
@@ -107,15 +104,12 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
     if (!selectedLoan) return;
 
     try {
-      // Se mudar para "devolvido", usar a data definida pelo usuário
       const updatePayload: any = { status: newStatus };
       if (newStatus === 'devolvido' && returnDate) {
-        // Converte a data do input para UTC
         const parts = returnDate.split('-');
         const dateInUTC = new Date(Date.UTC(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])));
         updatePayload.actualReturnDate = dateInUTC.toISOString();
       } else if (newStatus === 'devolvido') {
-        // Se não definir data, usa hoje
         const today = new Date();
         const dateInUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
         updatePayload.actualReturnDate = dateInUTC.toISOString();
@@ -123,7 +117,6 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
       
       const updatedLoan = await LoanService.updateLoanStatus(selectedLoan.id, newStatus, updatePayload.actualReturnDate);
       
-      // Atualizar a loan no estado com todos os campos retornados pelo backend
       setLoans(loans.map(loan => 
         loan.id === selectedLoan.id ? { ...loan, ...updatedLoan } : loan
       ));
@@ -138,7 +131,6 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
   const openStatusModal = (loan: AdminLoanData) => {
     setSelectedLoan(loan);
     setNewStatus(loan.status);
-    // Define a data de hoje como padrão
     const today = new Date();
     setReturnDate(today.toISOString().split('T')[0]);
     setShowStatusModal(true);
@@ -321,7 +313,7 @@ export const AdminLoansPage: React.FC<AdminLoansPageProps> = ({ onLogout, onCrea
         )}
       </Container>
 
-      {/* Modal para editar status */}
+      {}
       <Modal show={showStatusModal} onHide={() => setShowStatusModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Atualizar Status - Empréstimo #{selectedLoan?.id}</Modal.Title>

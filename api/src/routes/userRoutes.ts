@@ -7,7 +7,6 @@ const router = Router();
 
 router.use(authenticate);
 
-// Obter usuário por ID
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;

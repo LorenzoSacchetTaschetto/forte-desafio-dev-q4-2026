@@ -8,7 +8,6 @@ interface CreateLoanPageProps {
   onBack: () => void;
 }
 
-// Helper para obter data local no formato YYYY-MM-DD sem problemas de timezone
 const getLocalDateString = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -55,8 +54,6 @@ export const CreateLoanPage: React.FC<CreateLoanPageProps> = ({ onLoanCreated, o
     setCreating(true);
 
     try {
-      // Envia apenas a data sem conversão de timezone
-      // Exemplo: "2026-01-24" é enviado como está
       await CreateLoanService.createLoan({
         bookId: Number(selectedBookId),
         loanDate: loanDate,

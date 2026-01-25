@@ -6,7 +6,7 @@ const router = Router();
 
 router.use(authenticate);
 
-// Rotas específicas primeiro
+// Rotas específicas 
 router.get('/me', LoanController.getUserLoans);
 router.get('/status', LoanController.getLoansByStatus);
 

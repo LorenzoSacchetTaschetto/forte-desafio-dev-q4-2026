@@ -14,7 +14,6 @@ class AuthController {
       const hashedPassword = await bcrypt.hash(password, 10);
       const userCreated = await UserService.createUser({ name, email, password: hashedPassword });
       
-      // Buscar o usuário para pegar o role
       const userByEmail = await UserRepository.findByEmail(email);
       const role = userByEmail?.role || 'user';
 

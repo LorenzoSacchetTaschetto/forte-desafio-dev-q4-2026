@@ -1,3 +1,17 @@
+Ao iniciar a aplicação, você será direcionado para a página de login. Faça login com suas credenciais e, dependendo do seu papel, terá acesso a diferentes funcionalidades. O sistema mantém todas as informações persistidas no banco de dados PostgreSQL, garantindo que os dados sejam mantidos mesmo após reiniciar a aplicação.
+
+Papel do Administrador (Apenas pode ser criado via Banco, atualizando o Role)
+O administrador possui controle total sobre o sistema. Suas responsabilidades incluem: gerenciar o catálogo de livros, controlar todos os empréstimos do sistema (visualizar, alterar status de "emprestado" para "devolvido" ou "extraviado"), registrar devoluções e monitorar multas geradas por atrasos. O admin é o único com acesso ao dashboard administrativo, onde pode visualizar relatórios completos e ter visibilidade total sobre todas as operações da biblioteca.
+
+Papel do Usuário Comum
+O usuário comum tem funcionalidades limitadas e focadas em suas próprias atividades. Pode visualizar o catálogo de livros disponíveis, realizar empréstimos de títulos, consultar seus próprios empréstimos com status atualizado. Usuários comuns não podem acessar o gerenciamento administrativo nem visualizar empréstimos de outros usuários, garantindo privacidade e segurança dos dados.
+
+Exemplos de Uso
+Admin: Cria um novo livro no sistema → Define a data de devolução automática (30 dias, ajustada para segunda se cair no fim de semana) → Monitora quando usuários fazem empréstimos → Marca como "devolvido" ou "extraviado" → Consulta multas de R$ 0,50/dia após 1 dia de atraso.
+
+Usuário Comum: Faz login → Busca um livro disponível → Realiza o empréstimo → Recebe data de retorno automática → Consulta seus empréstimos ativos → Verifica se há multas pendentes se devolveu com atraso.
+
+
 # forte-security-desafio-dev-q4-2025
 
 Desenvolva uma aplicação para uma biblioteca em que seja possível gerenciar os empréstimos de livros e calcular a multa no caso de devolução atrasada ou não devolução.

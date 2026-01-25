@@ -1,4 +1,3 @@
-/* Cores principais */
 :root {
   --primary-blue: #0052cc;
   --light-blue: #0066ff;
@@ -29,7 +28,6 @@ code {
     monospace;
 }
 
-/* Navbar */
 .navbar {
   background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%) !important;
   box-shadow: 0 2px 8px rgba(0, 82, 204, 0.15);
@@ -59,12 +57,10 @@ code {
   border-color: var(--white);
 }
 
-/* Container */
 .container {
   max-width: 1000px;
 }
 
-/* Títulos */
 h2 {
   color: var(--primary-blue);
   font-weight: 700;
@@ -72,7 +68,6 @@ h2 {
   font-size: 2rem;
 }
 
-/* Tabela */
 .table {
   background-color: var(--white);
   border-radius: 8px;
@@ -114,7 +109,6 @@ h2 {
   border-bottom: none;
 }
 
-/* Badges */
 .badge {
   font-weight: 600;
   padding: 0.5rem 0.75rem;
@@ -145,7 +139,6 @@ h2 {
   color: #000 !important;
 }
 
-/* Alerts */
 .alert {
   border: none;
   border-radius: 8px;
@@ -166,7 +159,6 @@ h2 {
   border-left: 4px solid #dc3545;
 }
 
-/* Card para Login */
 .card {
   border: none;
   border-radius: 12px;
@@ -185,7 +177,6 @@ h2 {
   text-align: center;
 }
 
-/* Formulários */
 .form-control {
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -207,7 +198,6 @@ h2 {
   font-size: 0.9rem;
 }
 
-/* Botões */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
   border: none;
@@ -234,12 +224,10 @@ h2 {
   transform: none;
 }
 
-/* Spinner */
 .spinner-border {
   color: var(--primary-blue) !important;
 }
 
-/* Link de toggle */
 a, button[type="button"] {
   color: var(--primary-blue);
   text-decoration: none;
@@ -254,7 +242,6 @@ button[type="button"] {
   cursor: pointer;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   h2 {
     font-size: 1.5rem;
@@ -276,7 +263,6 @@ button[type="button"] {
   }
 }
 
-/* Classe utilitária */
 .mt-5 {
   margin-top: 3rem !important;
 }

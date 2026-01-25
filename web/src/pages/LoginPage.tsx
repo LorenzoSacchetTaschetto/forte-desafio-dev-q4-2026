@@ -58,7 +58,7 @@ export const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             </p>
           </div>
 
-          {/* Card Principal */}
+          {}
           <Card>
             <Card.Body>
               <Card.Title style={{ marginBottom: '1.5rem', textAlign: 'center', color: '#0052cc' }}>
@@ -143,7 +143,7 @@ export const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             </Card.Body>
           </Card>
 
-          {/* Footer */}
+          {}
           <div className="text-center mt-4">
             <small style={{ color: '#6c757d' }}>
               © 2026 Forte Library. Todos os direitos reservados.

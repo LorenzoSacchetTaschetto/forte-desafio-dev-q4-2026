@@ -25,10 +25,8 @@ class LoanService {
   }
 
   calculateReturnDate(loanDate: Date): Date {
-    // Cria uma cópia para não modificar a data original
     const returnDate = new Date(loanDate);
     
-    // Adiciona 30 dias
     returnDate.setDate(returnDate.getDate() + 30);
 
     // Se cair em sábado (6) ou domingo (0), move para próxima segunda
@@ -41,7 +39,6 @@ class LoanService {
       returnDate.setDate(returnDate.getDate() + 1);
     }
 
-    // Reseta a hora para meia-noite para consistência
     returnDate.setHours(0, 0, 0, 0);
 
     return returnDate;
@@ -84,8 +81,7 @@ class LoanService {
       throw new Error('Livro não encontrado');
     }
 
-    // Parse da data local sem conversão de timezone
-    // Entrada: "2026-01-24" -> cria Date para esse dia em horário local
+
     const parts = loanDTO.loanDate.split('T')[0].split('-');
     const loanDate = new Date(
       parseInt(parts[0]),
@@ -148,7 +144,6 @@ class LoanService {
 
     const updateData: any = {};
     
-    // Atualizar status
     if (loanData.status !== undefined) {
       if (!['emprestado', 'devolvido', 'extraviado'].includes(loanData.status)) {
         throw new Error('Status inválido');
@@ -156,10 +151,8 @@ class LoanService {
       updateData.status = loanData.status;
     }
     
-    // Atualizar userId
     if (loanData.userId !== undefined) updateData.userId = loanData.userId;
     
-    // Atualizar bookId
     if (loanData.bookId !== undefined) {
       const book = await BookService.getBookById(loanData.bookId);
       if (!book) {
@@ -168,7 +161,6 @@ class LoanService {
       updateData.bookId = loanData.bookId;
     }
     
-    // Atualizar loanDate
     if (loanData.loanDate !== undefined) {
       const parts = loanData.loanDate.split('T')[0].split('-');
       updateData.loanDate = new Date(
@@ -179,7 +171,6 @@ class LoanService {
       ).toISOString();
     }
     
-    // Atualizar returnDate
     if (loanData.returnDate !== undefined) {
       const parts = loanData.returnDate.split('T')[0].split('-');
       updateData.returnDate = new Date(
@@ -190,12 +181,10 @@ class LoanService {
       ).toISOString();
     }
     
-    // Atualizar actualReturnDate
     if (loanData.actualReturnDate !== undefined) {
       updateData.actualReturnDate = new Date(loanData.actualReturnDate).toISOString();
     }
     
-    // Calcular multa se mudando para "devolvido"
     if (loanData.status === 'devolvido' && updateData.actualReturnDate) {
       const returnDateObj = typeof loanRecord.returnDate === 'string' ? new Date(loanRecord.returnDate) : loanRecord.returnDate;
       const actualReturnDateObj = new Date(updateData.actualReturnDate);
@@ -206,7 +195,6 @@ class LoanService {
       }
       updateData.fine = fine;
     } else if (loanData.fine !== undefined) {
-      // Se foi enviada multa manualmente, usar esse valor
       updateData.fine = loanData.fine;
     }
 
